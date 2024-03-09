@@ -1,9 +1,12 @@
 package com.example.lab2;
 
-import android.app.Activity;
+import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +16,6 @@ import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -22,58 +24,71 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class PhoneDialerActivity extends AppCompatActivity {
     Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b0, bStar, bDiez;
-    ImageButton bDelete;
-    EditText phoneNumber;
+    ImageButton bDelete, bAnswer, bDecline;
+    EditText phoneNumberEditText;
 
     private class ButtonPushListener implements View.OnClickListener {
 
         @Override
         public void onClick(View view) {
-           if (view.getId() == R.id.button1) {
-               phoneNumber.setText(phoneNumber.getText().append('1'));
-               Log.d("BUTTON", "1");
-           } else if (view.getId() == R.id.button2) {
-               phoneNumber.setText(phoneNumber.getText().append('2'));
-               Log.d("BUTTON", "2");
-           } else if (view.getId() == R.id.button3) {
-               phoneNumber.setText(phoneNumber.getText().append('3'));
-               Log.d("BUTTON", "3");
-           } else if (view.getId() == R.id.button4) {
-               phoneNumber.setText(phoneNumber.getText().append('4'));
-               Log.d("BUTTON", "4");
-           } else if (view.getId() == R.id.button5) {
-               phoneNumber.setText(phoneNumber.getText().append('5'));
-               Log.d("BUTTON", "5");
-           } else if (view.getId() == R.id.button6) {
-               phoneNumber.setText(phoneNumber.getText().append('6'));
-               Log.d("BUTTON", "6");
-           } else if (view.getId() == R.id.button7) {
-               phoneNumber.setText(phoneNumber.getText().append('7'));
-               Log.d("BUTTON", "7");
-           } else if (view.getId() == R.id.button8) {
-               phoneNumber.setText(phoneNumber.getText().append('8'));
-               Log.d("BUTTON", "8");
-           } else if (view.getId() == R.id.button9) {
-               phoneNumber.setText(phoneNumber.getText().append('9'));
-               Log.d("BUTTON", "9");
-           } else if (view.getId() == R.id.button0) {
-               phoneNumber.setText(phoneNumber.getText().append('0'));
-               Log.d("BUTTON", "0");
-           } else if (view.getId() == R.id.buttonStar) {
-               phoneNumber.setText(phoneNumber.getText().append('*'));
-               Log.d("BUTTON", "*");
-           } else if (view.getId() == R.id.buttonDiez) {
-               phoneNumber.setText(phoneNumber.getText().append('#'));
-               Log.d("BUTTON", "#");
-           } else if (view.getId() == R.id.deleteButton) {
-               String currentPhoneNumber = phoneNumber.getText().toString();
-               Log.d("BUTTON", "DELETE");
+            if (view.getId() == R.id.button1) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('1'));
+                Log.d("BUTTON", "1");
+            } else if (view.getId() == R.id.button2) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('2'));
+                Log.d("BUTTON", "2");
+            } else if (view.getId() == R.id.button3) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('3'));
+                Log.d("BUTTON", "3");
+            } else if (view.getId() == R.id.button4) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('4'));
+                Log.d("BUTTON", "4");
+            } else if (view.getId() == R.id.button5) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('5'));
+                Log.d("BUTTON", "5");
+            } else if (view.getId() == R.id.button6) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('6'));
+                Log.d("BUTTON", "6");
+            } else if (view.getId() == R.id.button7) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('7'));
+                Log.d("BUTTON", "7");
+            } else if (view.getId() == R.id.button8) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('8'));
+                Log.d("BUTTON", "8");
+            } else if (view.getId() == R.id.button9) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('9'));
+                Log.d("BUTTON", "9");
+            } else if (view.getId() == R.id.button0) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('0'));
+                Log.d("BUTTON", "0");
+            } else if (view.getId() == R.id.buttonStar) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('*'));
+                Log.d("BUTTON", "*");
+            } else if (view.getId() == R.id.buttonDiez) {
+                phoneNumberEditText.setText(phoneNumberEditText.getText().append('#'));
+                Log.d("BUTTON", "#");
+            } else if (view.getId() == R.id.deleteButton) {
+                String currentPhoneNumber = phoneNumberEditText.getText().toString();
+                Log.d("BUTTON", "DELETE");
 
-               if (!currentPhoneNumber.isEmpty()) {
-                   phoneNumber.setText(currentPhoneNumber.substring(0, currentPhoneNumber.length() - 1));
-               }
-
-           }
+                if (!currentPhoneNumber.isEmpty()) {
+                    phoneNumberEditText.setText(currentPhoneNumber.substring(0, currentPhoneNumber.length() - 1));
+                }
+            } else if (view.getId() == R.id.answerButton) {
+                if (ContextCompat.checkSelfPermission(PhoneDialerActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(
+                            PhoneDialerActivity.this,
+                            new String[]{Manifest.permission.CALL_PHONE},
+                            Constants.PERMISSION_REQUEST_CALL_PHONE
+                    );
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_CALL);
+                    intent.setData(Uri.parse("tel: " + phoneNumberEditText.getText().toString()));
+                    startActivity(intent);
+                }
+            } else if (view.getId() == R.id.declineButton) {
+                finish();
+            }
         }
     }
 
@@ -88,14 +103,13 @@ public class PhoneDialerActivity extends AppCompatActivity {
             return insets;
         });
 
-        phoneNumber = findViewById(R.id.phoneNumberEditText);
-        phoneNumber.setInputType(InputType.TYPE_NULL);
+        phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
+        phoneNumberEditText.setInputType(InputType.TYPE_NULL);
 
         setButtons();
 
         ButtonPushListener buttonPushListener = new ButtonPushListener();
         setListenerToButtons(buttonPushListener);
-
     }
 
     private void setButtons() {
@@ -112,6 +126,8 @@ public class PhoneDialerActivity extends AppCompatActivity {
         bStar = findViewById(R.id.buttonStar);
         bDiez = findViewById(R.id.buttonDiez);
         bDelete = findViewById(R.id.deleteButton);
+        bAnswer = findViewById(R.id.answerButton);
+        bDecline = findViewById(R.id.declineButton);
 
         int currentMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
@@ -136,5 +152,7 @@ public class PhoneDialerActivity extends AppCompatActivity {
         bStar.setOnClickListener(buttonPushListener);
         bDiez.setOnClickListener(buttonPushListener);
         bDelete.setOnClickListener(buttonPushListener);
+        bAnswer.setOnClickListener(buttonPushListener);
+        bDecline.setOnClickListener(buttonPushListener);
     }
 }
