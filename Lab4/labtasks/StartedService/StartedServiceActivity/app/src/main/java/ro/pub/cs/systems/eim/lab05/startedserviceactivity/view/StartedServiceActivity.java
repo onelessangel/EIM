@@ -1,11 +1,15 @@
 package ro.pub.cs.systems.eim.lab05.startedserviceactivity.view;
 
+import android.content.ComponentName;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import ro.pub.cs.systems.eim.lab05.startedserviceactivity.R;
+import ro.pub.cs.systems.eim.lab05.startedserviceactivity.general.Constants;
 
 public class StartedServiceActivity extends AppCompatActivity {
 
@@ -20,7 +24,16 @@ public class StartedServiceActivity extends AppCompatActivity {
 
         messageTextView = (TextView)findViewById(R.id.message_text_view);
 
-        // TODO: exercise 6 - start the service
+        // create explicit intent
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName(Constants.SERVICE_PACKAGE, Constants.SERVICE_CLASS));
+
+        // start service depending on SDK version
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(intent);
+        } else {
+            this.startService(intent);
+        }
 
         // TODO: exercise 8a - create an instance of the StartedServiceBroadcastReceiver broadcast receiver
 
