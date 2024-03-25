@@ -11,6 +11,9 @@ public class StartedServiceBroadcastReceiver extends BroadcastReceiver {
 
     private TextView messageTextView;
 
+    public StartedServiceBroadcastReceiver() {
+    }
+
     public StartedServiceBroadcastReceiver(TextView messageTextView) {
         this.messageTextView = messageTextView;
     }
