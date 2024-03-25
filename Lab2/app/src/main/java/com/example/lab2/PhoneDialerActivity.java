@@ -13,8 +13,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -24,8 +29,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class PhoneDialerActivity extends AppCompatActivity {
     Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b0, bStar, bDiez;
-    ImageButton bDelete, bAnswer, bDecline;
+    ImageButton bDelete, bAnswer, bDecline, bContacts;
     EditText phoneNumberEditText;
+
+    private ActivityResultLauncher<Intent> startActivityForResultLauncher;
 
     private class ButtonPushListener implements View.OnClickListener {
 
@@ -88,6 +95,14 @@ public class PhoneDialerActivity extends AppCompatActivity {
                 }
             } else if (view.getId() == R.id.declineButton) {
                 finish();
+            } else if (view.getId() == R.id.contactsButton) {
+                String phoneNumber = phoneNumberEditText.getText().toString();
+
+                if (!phoneNumber.isEmpty()) {
+                    Intent intent = new Intent("com.example.lab3.contactsmanager.intent.action.ContactsManagerActivity");
+                    intent.putExtra("com.example.lab3.contactsmanager.PHONE_NUMBER_KEY", phoneNumber);
+                    startActivityForResultLauncher.launch(intent);
+                }
             }
         }
     }
@@ -110,6 +125,17 @@ public class PhoneDialerActivity extends AppCompatActivity {
 
         ButtonPushListener buttonPushListener = new ButtonPushListener();
         setListenerToButtons(buttonPushListener);
+
+        startActivityForResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == RESULT_OK) {
+                    Toast.makeText(getApplication(), "Creating contact", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplication(), "ERROR", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void setButtons() {
@@ -128,6 +154,7 @@ public class PhoneDialerActivity extends AppCompatActivity {
         bDelete = findViewById(R.id.deleteButton);
         bAnswer = findViewById(R.id.answerButton);
         bDecline = findViewById(R.id.declineButton);
+        bContacts = findViewById(R.id.contactsButton);
 
         int currentMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
@@ -154,5 +181,6 @@ public class PhoneDialerActivity extends AppCompatActivity {
         bDelete.setOnClickListener(buttonPushListener);
         bAnswer.setOnClickListener(buttonPushListener);
         bDecline.setOnClickListener(buttonPushListener);
+        bContacts.setOnClickListener(buttonPushListener);
     }
 }
