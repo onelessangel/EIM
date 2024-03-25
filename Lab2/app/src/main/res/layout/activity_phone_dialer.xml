@@ -136,6 +136,17 @@
             android:src="@drawable/green_phone" />
 
         <ImageButton
+            android:id="@+id/contactsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="5"
+            android:layout_column="1"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:background="@color/transparent"
+            android:src="@drawable/notebook_of_contacts" />
+
+        <ImageButton
             android:id="@+id/declineButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
