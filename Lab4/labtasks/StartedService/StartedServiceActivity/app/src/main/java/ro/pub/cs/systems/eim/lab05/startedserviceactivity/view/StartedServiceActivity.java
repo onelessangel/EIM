@@ -17,23 +17,35 @@ public class StartedServiceActivity extends AppCompatActivity {
     private StartedServiceBroadcastReceiver startedServiceBroadcastReceiver;
     private IntentFilter startedServiceIntentFilter;
 
+    private Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_started_service);
 
-        messageTextView = (TextView)findViewById(R.id.message_text_view);
+        messageTextView = findViewById(R.id.message_text_view);
 
-        // create explicit intent
-        Intent intent = new Intent();
+        // ex 4
+        // create intent which explicitly indicates the service to be started
+        intent = new Intent();
         intent.setComponent(new ComponentName(Constants.SERVICE_PACKAGE, Constants.SERVICE_CLASS));
 
         // start service depending on SDK version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.startForegroundService(intent);
+            this.startForegroundService(intent);    // for versions higher than Oreo
         } else {
             this.startService(intent);
         }
+
+        // ex 6
+        startedServiceBroadcastReceiver = new StartedServiceBroadcastReceiver(messageTextView);
+
+        // intent filter for watching certain actions in intents
+        startedServiceIntentFilter = new IntentFilter();
+        startedServiceIntentFilter.addAction(Constants.ACTION_STRING);
+        startedServiceIntentFilter.addAction(Constants.ACTION_INTEGER);
+        startedServiceIntentFilter.addAction(Constants.ACTION_ARRAY_LIST);
 
         // TODO: exercise 8a - create an instance of the StartedServiceBroadcastReceiver broadcast receiver
 
@@ -42,24 +54,24 @@ public class StartedServiceActivity extends AppCompatActivity {
 
     }
 
+    // ex 6 - register the broadcast receiver with the corresponding intent filter
     @Override
     protected void onResume() {
         super.onResume();
-
-        // TODO: exercise 8c - register the broadcast receiver with the corresponding intent filter
+        registerReceiver(startedServiceBroadcastReceiver, startedServiceIntentFilter);
     }
 
+    // ex 6 - unregister the broadcast receiver
     @Override
     protected void onPause() {
-        // TODO: exercise 8c - unregister the broadcast receiver
-
+        unregisterReceiver(startedServiceBroadcastReceiver);
         super.onPause();
     }
 
+    // ex 6 - stop the service
     @Override
     protected void onDestroy() {
-        // TODO: exercise 8d - stop the service
-
+        stopService(intent);
         super.onDestroy();
     }
 
