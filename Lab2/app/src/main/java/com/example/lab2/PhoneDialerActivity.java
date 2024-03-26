@@ -126,14 +126,13 @@ public class PhoneDialerActivity extends AppCompatActivity {
         ButtonPushListener buttonPushListener = new ButtonPushListener();
         setListenerToButtons(buttonPushListener);
 
-        startActivityForResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == RESULT_OK) {
-                    Toast.makeText(getApplication(), "Creating contact", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplication(), "ERROR", Toast.LENGTH_SHORT).show();
-                }
+        startActivityForResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Toast.makeText(getApplication(), "Creating contact", Toast.LENGTH_SHORT).show();
+            } else if (result.getResultCode() == RESULT_CANCELED){
+                Toast.makeText(getApplication(), "Cancelled", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplication(), "ERROR", Toast.LENGTH_SHORT).show();
             }
         });
     }

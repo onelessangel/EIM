@@ -9,8 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -23,6 +27,8 @@ public class ContactsManagerActivity extends AppCompatActivity {
     EditText nameEditText, phoneEditText, emailEditText, addressEditText;
     EditText jobTitleEditText, companyEditText, websiteEditText, imEditText;
     LinearLayout additionalDetails;
+
+    private ActivityResultLauncher<Intent> startActivityForResultLauncher;
 
     private class ButtonListener implements View.OnClickListener {
         @Override
@@ -86,8 +92,10 @@ public class ContactsManagerActivity extends AppCompatActivity {
                 }
 
                 intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contactData);
-                startActivity(intent);
+//                startActivity(intent);
+                startActivityForResultLauncher.launch(intent);
             } else if (view.getId() == R.id.cancelButton) {
+                setResult(RESULT_CANCELED);
                 finish();
             }
         }
@@ -121,5 +129,27 @@ public class ContactsManagerActivity extends AppCompatActivity {
         detailsButton.setOnClickListener(buttonListener);
         saveButton.setOnClickListener(buttonListener);
         cancelButton.setOnClickListener(buttonListener);
+
+        startActivityForResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            // FOR SAMSUNG CONTACTS APP - sends wrong response code (CANCELLED - on both Save and Cancel)
+//            Log.d("RESULT_CODE", String.valueOf(result.getResultCode()));
+//            setResult(-2);  // ERROR
+//            if (result.getResultCode() == RESULT_CANCELED) {
+//                setResult(RESULT_OK);
+//            }
+            setResult(result.getResultCode());
+            finish();
+        });
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            String phone = intent.getStringExtra("com.example.lab3.contactsmanager.PHONE_NUMBER_KEY");
+
+            if (phone != null) {
+                phoneEditText.setText(phone);
+            } else {
+                Toast.makeText(this, "ERROR IN SETTING THE PHONE NUMBER", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
