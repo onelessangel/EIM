@@ -32,6 +32,7 @@ public class ProcessingThread extends Thread {
         }
     }
 
+    // uses setAction and putExtra for each message type
     private void sendMessage(int messageType) {
         Intent intent = new Intent();
         switch (messageType) {
