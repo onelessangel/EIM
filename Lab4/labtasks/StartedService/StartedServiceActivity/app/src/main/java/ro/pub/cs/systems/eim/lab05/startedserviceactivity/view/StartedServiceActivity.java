@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import ro.pub.cs.systems.eim.lab05.startedserviceactivity.R;
@@ -24,7 +25,7 @@ public class StartedServiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_started_service);
 
-        messageTextView = findViewById(R.id.message_text_view);
+        messageTextView = findViewById(R.id.messageTextView);
 
         // ex 4
         // create intent which explicitly indicates the service to be started
@@ -40,33 +41,27 @@ public class StartedServiceActivity extends AppCompatActivity {
 
         // ex 6
         startedServiceBroadcastReceiver = new StartedServiceBroadcastReceiver(messageTextView);
-
-        // intent filter for watching certain actions in intents
-        startedServiceIntentFilter = new IntentFilter();
-        startedServiceIntentFilter.addAction(Constants.ACTION_STRING);
-        startedServiceIntentFilter.addAction(Constants.ACTION_INTEGER);
-        startedServiceIntentFilter.addAction(Constants.ACTION_ARRAY_LIST);
-
-        // TODO: exercise 8a - create an instance of the StartedServiceBroadcastReceiver broadcast receiver
-
-        // TODO: exercise 8b - create an instance of an IntentFilter
-        // with all available actions contained within the broadcast intents sent by the service
-
+//
+//        // intent filter for watching certain actions in intents
+//        startedServiceIntentFilter = new IntentFilter();
+//        startedServiceIntentFilter.addAction(Constants.ACTION_STRING);
+//        startedServiceIntentFilter.addAction(Constants.ACTION_INTEGER);
+//        startedServiceIntentFilter.addAction(Constants.ACTION_ARRAY_LIST);
     }
 
-    // ex 6 - register the broadcast receiver with the corresponding intent filter
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(startedServiceBroadcastReceiver, startedServiceIntentFilter);
-    }
+//    // ex 6 - register the broadcast receiver with the corresponding intent filter
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        registerReceiver(startedServiceBroadcastReceiver, startedServiceIntentFilter);
+//    }
 
-    // ex 6 - unregister the broadcast receiver
-    @Override
-    protected void onPause() {
-        unregisterReceiver(startedServiceBroadcastReceiver);
-        super.onPause();
-    }
+//    // ex 6 - unregister the broadcast receiver
+//    @Override
+//    protected void onPause() {
+//        unregisterReceiver(startedServiceBroadcastReceiver);
+//        super.onPause();
+//    }
 
     // ex 6 - stop the service
     @Override
@@ -78,5 +73,13 @@ public class StartedServiceActivity extends AppCompatActivity {
     // TODO: exercise 9 - implement the onNewIntent callback method
     // get the message from the extra field of the intent
     // and display it in the messageTextView
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String message = intent.getStringExtra(Constants.MESSAGE);
+        if (message != null) {
+            Log.d("DATA", message);
+            messageTextView.setText(messageTextView.getText().toString() + "\n" + message);
+        }
+    }
 }

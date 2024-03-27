@@ -26,45 +26,33 @@ public class StartedServiceBroadcastReceiver extends BroadcastReceiver {
         // ex 5
         // get the action and the extra information from the intent
         String action = intent.getAction();
-//        String dataString = null;
-//        int dataInteger = Integer.parseInt(null);
+        String data = null;
 
         if (action != null) {
             switch (action) {
                 case Constants.ACTION_STRING:
-                    String stringData = intent.getStringExtra(Constants.DATA);
-                    Log.d("DATA", stringData);
+                    data = intent.getStringExtra(Constants.DATA);
                     break;
                 case Constants.ACTION_INTEGER:
-                    int integerData = intent.getIntExtra(Constants.DATA, 0);
-                    Log.d("DATA", String.valueOf(integerData));
+                    data = String.valueOf(intent.getIntExtra(Constants.DATA, 0));
                     break;
                 case Constants.ACTION_ARRAY_LIST:
-                    ArrayList<String> arrayListData = intent.getStringArrayListExtra(Constants.DATA);
-
-                    StringBuilder sb = new StringBuilder();
-                    for (String s : arrayListData) {
-                        sb.append(s + " ");
-                    }
-
-                    Log.d("DATA", sb.toString());
+                    data = intent.getStringArrayListExtra(Constants.DATA).toString();
                     break;
                 default:
                     break;
             }
         }
 
+//        Log.d("DATA", data);
+//        messageTextView.setText(messageTextView.getText().toString() + "\n" + data);
 
-//        if (Constants.ACTION_STRING.equals(action)) {
-//            dataString = intent.getStringExtra(Constants.DATA);
-//        }
 
-        // and set the text on the messageTextView
-//        if (messageTextView != null) {
-//            messageTextView.setText(messageTextView.getText().toString() + "\n" + dataString);
-//        }
-
-        // TODO: exercise 9 - restart the activity through an intent
-        // if the messageTextView is not available
+        // ex 7
+        // restart the activity through an intent if the messageTextView is not available
+        Intent startedServiceActivityIntent = new Intent(context, StartedServiceActivity.class);
+        startedServiceActivityIntent.putExtra(Constants.MESSAGE, data);
+        startedServiceActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        context.startActivity(startedServiceActivityIntent);
     }
 }
